@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *{
+    margin: 0;
+    padding: 0;
+    }
+    .container{
+        position: absolute;
+        top: 20%;
+        left: 45%;
+        background-color: grey;
+        padding: 10px;
+        border-radius: 10px;
+    }
+
+    button{
+        width: 50px;
+        height: 50px;
+        outline: none;
+        margin: 2px;
+        font-size: 35px;
+        font-weight: bold;
+        border-radius: 10px;
+    }
+
+    .clear{
+        height: 45px;
+        width: 110px;
+    }
+
+    .back{
+        width: 110px;
+        height: 45px;
+    }
+
+    .result{
+        width: 225px;
+        height: 50px;
+        margin: 2px;
+        font-size: 35px;
+        font-weight: bold;
+        border-radius: 10px;
+    }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function(){
+
+        $(".btn").click(function(){
+            var value = $(this).text();
+            $(".result").val($(".result").val() + value);
+        });
+
+        $(".operator").click(function(){
+            var enteredval= $(this).text();
+            var currentval= $(".result").val();
+            if(currentval !== -1)
+            {
+                $(".result").val(currentval+enteredval);
+            }
+        });
+
+        $(".clear").click(function(){
+            $(".result").val('');
+        });
+
+        $(".result").on('keypress', function(event){
+            var charcode= event.which;
+            if(charcode === 13)
+            {
+                performEqualOperation();
+                event.preventDefault();
+            }
+        });
+
+        $(".equalto").click(function(){
+            performEqualOperation();
+        });
+
+        $(".result").on('input', function() {
+            var inputValue = $(this).val();
+            var replaceval = inputValue.replace(/[^0-9+\-*/.]/g, '');
+            $(this).val(replaceval);
+        });
+
+        function performEqualOperation()
+        {
+            var expression= $(".result").val();
+            var result= evaluateExpression(expression);
+            $(".result").val(result);
+        }
+
+        function evaluateExpression(expression) {
+            var numbers = [];
+            var operatorsArr = [];
+            var currentNumber = '';
+            for (var i = 0; i < expression.length; i++) {
+            var char = expression.charAt(i);
+            if (isNumber(char)) {
+                currentNumber += char;
+            } else if (isOperator(char)) {
+                numbers.push(parseFloat(currentNumber));
+                operatorsArr.push(char);
+                currentNumber = '';
+            }
+            }
+            numbers.push(parseFloat(currentNumber));
+
+            var result = numbers[0];
+            for (var j = 0; j < operatorsArr.length; j++) {
+            var operator = operatorsArr[j];
+            var number = numbers[j + 1];
+            result = applyOperator(result, operator, number);
+            }
+            
+            return result;
+        }
+
+        function isNumber(char) {
+            return (char >= '0' && char <= '9') || char === '.';
+        }
+
+        function isOperator(char) {
+            return char === '+' || char === '-' || char === '*' || char === '/';
+        }
+
+        function applyOperator(a, operator, b) {
+            switch (operator) {
+            case '+':
+                return a + b;
+            case '-':
+                return a - b;
+            case '*':
+                return a * b;
+            case '/':
+                return a / b;
+            }
+        }
+
+        $(".back").click(function(){
+            var currentval= $(".result").val();
+            var newval= currentval.slice(0, -1);
+            $(".result").val(newval);
+        });
+        });
+
+
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div><input type="text" class="result"></div>
+        <div>
+            <button type="button" class="clear">c</button>
+            <button type="button" class="back"><code>&lt;&lt;</code></button>
+        </div>
+        <div>
+            <button type="button" class="btn">1</button>
+            <button type="button" class="btn">2</button>
+            <button type="button" class="btn">3</button>
+            <button type="button" class="operator">*</button>
+        </div>
+        <div>
+            <button type="button" class="btn">4</button>
+            <button type="button" class="btn">5</button>
+            <button type="button" class="btn">6</button>
+            <button type="button" class="operator">-</button>
+        </div>
+        <div>
+            <button type="button" class="btn">7</button>
+            <button type="button" class="btn">8</button>
+            <button type="button" class="btn">9</button>
+            <button type="button" class="operator">+</button>
+        </div>
+        <div>
+            <button type="button" class="btn">0</button>
+            <button type="button" class="btn">.</button>
+            <button type="button" class="operator">/</button>
+            <button type="button" class="equalto">=</button>
+        </div>
+    </div>
+</body>
+
+</html>
